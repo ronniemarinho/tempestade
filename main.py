@@ -1,26 +1,25 @@
 import numpy as np
 import pandas as pd
 import streamlit as st
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 from keras.layers import Dense
 from keras.optimizers import SGD
 from keras.callbacks import ModelCheckpoint
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, precision_score, recall_score, f1_score
 import matplotlib.pyplot as plt
 
 # Título do site
-st.title('Previsão do Tempo')
+st.title('Previsão do Tempo com Redes Neurais')
+
 # Centralizando a imagem usando colunas
-col1, col2, col3 = st.columns([1, 2, 1])  # Definindo uma estrutura de colunas com proporções 1:2:1
+col1, col2, col3 = st.columns([1, 2, 1])
 
 with col2:
     st.image('img.png', width=350)
+
 # Carregando os dados do arquivo CSV com pandas
 data = pd.read_csv("tempo.csv")
-
-# Pré-processamento dos dados
-# Aqui você deve realizar o pré-processamento necessário, como codificação de variáveis categóricas, normalização, etc.
 
 # Separando as features (X) e o target (y)
 X = data.drop(columns=['Vai_Chover'])
@@ -50,7 +49,7 @@ checkpoint = ModelCheckpoint('best_model.keras', monitor='val_accuracy', mode='m
 modelo.fit(X_train, y_train, epochs=100, batch_size=1, validation_split=0.2, callbacks=[checkpoint])
 
 # Carregando o melhor modelo salvo
-modelo.load_weights('best_model.keras')
+modelo = load_model('best_model.keras')
 
 # Avaliando a acurácia do modelo nos dados de teste
 loss, accuracy = modelo.evaluate(X_test, y_test)
@@ -83,4 +82,38 @@ fig, ax = plt.subplots(figsize=(8, 8))
 disp.plot(ax=ax, cmap='Blues')
 st.pyplot(fig)
 
-# Fórmulas de Redes Neurais
+# Cálculo das métricas avaliativas
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+
+# Exibindo as métricas avaliativas
+st.subheader('Métricas Avaliativas')
+st.write(f"**Acurácia:** {accuracy * 100:.2f}%")
+st.write(f"**Precisão:** {precision * 100:.2f}%")
+st.write(f"**Recall:** {recall * 100:.2f}%")
+st.write(f"**F1-Score:** {f1:.2f}")
+
+# Exibindo as fórmulas instanciadas de Acurácia, Precisão, Recall e F1-Score
+st.subheader("Fórmulas Instanciadas")
+
+# Fórmula da Acurácia
+st.latex(r'\text{Acurácia} = \frac{TP + TN}{TP + TN + FP + FN}')
+st.write(f"Com os valores calculados:")
+st.latex(f"\\text{{Acurácia}} = \\frac{{{cm[1, 1]} + {cm[0, 0]}}}{{{cm.sum()}}} = {accuracy:.2f}")
+
+# Fórmula da Precisão
+st.latex(r'\text{Precisão} = \frac{TP}{TP + FP}')
+st.write(f"Com os valores calculados:")
+st.latex(f"\\text{{Precisão}} = \\frac{{{cm[1, 1]}}}{{{cm[1, 1]} + {cm[0, 1]}}} = {precision:.2f}")
+
+# Fórmula do Recall
+st.latex(r'\text{Recall} = \frac{TP}{TP + FN}')
+st.write(f"Com os valores calculados:")
+st.latex(f"\\text{{Recall}} = \\frac{{{cm[1, 1]}}}{{{cm[1, 1]} + {cm[1, 0]}}} = {recall:.2f}")
+
+# Fórmula do F1-Score
+st.latex(r'F1 = 2 \cdot \frac{\text{Precisão} \cdot \text{Recall}}{\text{Precisão} + \text{Recall}}')
+st.write(f"Com os valores calculados:")
+st.latex(f"F1 = 2 \\cdot \\frac{{{precision:.2f} \\cdot {recall:.2f}}}{{{precision:.2f} + {recall:.2f}}} = {f1:.2f}")
