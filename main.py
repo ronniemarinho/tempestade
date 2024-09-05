@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import streamlit as st
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 from keras.layers import Dense
 from keras.optimizers import SGD
 from keras.callbacks import ModelCheckpoint
@@ -45,82 +45,4 @@ sgd = SGD(learning_rate=learning_rate)  # Otimizador SGD
 # Compilando o modelo com o otimizador personalizado
 modelo.compile(optimizer=sgd, loss='binary_crossentropy', metrics=['accuracy'])
 
-# Definindo o callback para salvar o melhor modelo
-checkpoint = ModelCheckpoint('best_model.keras', monitor='val_accuracy', mode='max', save_best_only=True, verbose=1)
-
-# Treinando o modelo com o callback
-modelo.fit(X_train, y_train, epochs=100, batch_size=1, validation_split=0.2, callbacks=[checkpoint])
-
-# Carregando o melhor modelo salvo
-modelo.load_weights('best_model.keras')
-
-# Avaliando a acurácia do modelo nos dados de teste
-loss, accuracy = modelo.evaluate(X_test, y_test)
-st.write(f"Acurácia nos dados de teste: {accuracy * 100:.2f}%")
-
-# Predição de um registro específico
-st.sidebar.title('Parâmetros de Previsão')
-param1 = st.sidebar.slider('Velocidade do Vento (Km)', min_value=float(X.min().min()), max_value=float(X.max().max()), value=5.0)
-param2 = st.sidebar.slider('Umidade do Ar', min_value=float(X.min().min()), max_value=float(X.max().max()), value=70.0)
-param3 = st.sidebar.slider('Temperatura', min_value=float(X.min().min()), max_value=float(X.max().max()), value=25.0)
-param4 = st.sidebar.slider('Min Temperatura', min_value=float(X.min().min()), max_value=float(X.max().max()), value=20.0)
-param5 = st.sidebar.slider('Max Temperatura', min_value=float(X.min().min()), max_value=float(X.max().max()), value=30.0)
-
-novo_registro = np.array([[param1, param2, param3, param4, param5]])
-
-# Fazendo a predição
-predicao = modelo.predict(novo_registro)
-classe_predita = np.round(predicao)
-
-# Exibindo a classe predita
-st.write(f"Predição para o novo registro: {'Vai Chover' if classe_predita[0][0] == 1 else 'Não Vai Chover'}")
-
-# Matriz de Confusão
-y_pred = (modelo.predict(X_test) > 0.5).astype("int32")
-cm = confusion_matrix(y_test, y_pred)
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['Não Vai Chover', 'Vai Chover'])
-
-# Plotando a matriz de confusão
-fig, ax = plt.subplots(figsize=(8, 8))
-disp.plot(ax=ax, cmap='Blues')
-st.pyplot(fig)
-
-# Cálculo das métricas avaliativas
-accuracy = accuracy_score(y_test, y_pred)
-precision = precision_score(y_test, y_pred)
-recall = recall_score(y_test, y_pred)
-f1 = f1_score(y_test, y_pred)
-
-# Exibindo as métricas avaliativas
-st.subheader('Métricas Avaliativas')
-st.write(f"**Acurácia:** {accuracy * 100:.2f}%")
-st.write(f"**Precisão:** {precision * 100:.2f}%")
-st.write(f"**Recall:** {recall * 100:.2f}%")
-st.write(f"**F1-Score:** {f1:.2f}")
-
-# Fórmulas das Métricas Avaliativas
-st.subheader('Fórmulas das Métricas Avaliativas')
-st.markdown("""
-### Fórmulas das Métricas Avaliativas
-
-1. **Acurácia**:
-   \[
-   \text{Acurácia} = \frac{TP + TN}{TP + TN + FP + FN}
-   \]
-   Onde \( TP \) é o Verdadeiro Positivo, \( TN \) é o Verdadeiro Negativo, \( FP \) é o Falso Positivo, e \( FN \) é o Falso Negativo.
-
-2. **Precisão**:
-   \[
-   \text{Precisão} = \frac{TP}{TP + FP}
-   \]
-
-3. **Recall**:
-   \[
-   \text{Recall} = \frac{TP}{TP + FN}
-   \]
-
-4. **F1-Score**:
-   \[
-   \text{F1-Score} = 2 \cdot \frac{\text{Precisão} \cdot \text{Recall}}{\text{Precisão} + \text{Recall}}
-   \]
-""")
+# Definindo o
