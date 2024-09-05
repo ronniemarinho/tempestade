@@ -52,41 +52,19 @@ modelo.fit(X_train, y_train, epochs=100, batch_size=1, validation_split=0.2, cal
 modelo = load_model('best_model.keras')
 
 # Avaliando a acurácia do modelo nos dados de teste
-loss, accuracy = modelo.evaluate(X_test, y_test)
-st.write(f"Acurácia nos dados de teste: {accuracy * 100:.2f}%")
-
-# Predição de um registro específico
-st.sidebar.title('Parâmetros de Previsão')
-param1 = st.sidebar.slider('Velocidade do Vento (Km)', min_value=float(X.min().min()), max_value=float(X.max().max()), value=5.0)
-param2 = st.sidebar.slider('Umidade do Ar', min_value=float(X.min().min()), max_value=float(X.max().max()), value=70.0)
-param3 = st.sidebar.slider('Temperatura', min_value=float(X.min().min()), max_value=float(X.max().max()), value=25.0)
-param4 = st.sidebar.slider('Min Temperatura', min_value=float(X.min().min()), max_value=float(X.max().max()), value=20.0)
-param5 = st.sidebar.slider('Max Temperatura', min_value=float(X.min().min()), max_value=float(X.max().max()), value=30.0)
-
-novo_registro = np.array([[param1, param2, param3, param4, param5]])
-
-# Fazendo a predição
-predicao = modelo.predict(novo_registro)
-classe_predita = np.round(predicao)
-
-# Exibindo a classe predita
-st.write(f"Predição para o novo registro: {'Vai Chover' if classe_predita[0][0] == 1 else 'Não Vai Chover'}")
-
-# Matriz de Confusão
 y_pred = (modelo.predict(X_test) > 0.5).astype("int32")
 cm = confusion_matrix(y_test, y_pred)
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['Não Vai Chover', 'Vai Chover'])
-
-# Plotando a matriz de confusão
-fig, ax = plt.subplots(figsize=(8, 8))
-disp.plot(ax=ax, cmap='Blues')
-st.pyplot(fig)
-
-# Cálculo das métricas avaliativas
 accuracy = accuracy_score(y_test, y_pred)
 precision = precision_score(y_test, y_pred)
 recall = recall_score(y_test, y_pred)
 f1 = f1_score(y_test, y_pred)
+
+# Matriz de Confusão
+st.subheader('Matriz de Confusão')
+fig, ax = plt.subplots(figsize=(8, 8))
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['Não Vai Chover', 'Vai Chover'])
+disp.plot(ax=ax, cmap='Blues')
+st.pyplot(fig)
 
 # Exibindo as métricas avaliativas
 st.subheader('Métricas Avaliativas')
@@ -117,3 +95,20 @@ st.latex(f"\\text{{Recall}} = \\frac{{{cm[1, 1]}}}{{{cm[1, 1]} + {cm[1, 0]}}} = 
 st.latex(r'F1 = 2 \cdot \frac{\text{Precisão} \cdot \text{Recall}}{\text{Precisão} + \text{Recall}}')
 st.write(f"Com os valores calculados:")
 st.latex(f"F1 = 2 \\cdot \\frac{{{precision:.2f} \\cdot {recall:.2f}}}{{{precision:.2f} + {recall:.2f}}} = {f1:.2f}")
+
+# Predição de um registro específico
+st.sidebar.title('Parâmetros de Previsão')
+param1 = st.sidebar.slider('Velocidade do Vento (Km)', min_value=float(X.min().min()), max_value=float(X.max().max()), value=5.0)
+param2 = st.sidebar.slider('Umidade do Ar', min_value=float(X.min().min()), max_value=float(X.max().max()), value=70.0)
+param3 = st.sidebar.slider('Temperatura', min_value=float(X.min().min()), max_value=float(X.max().max()), value=25.0)
+param4 = st.sidebar.slider('Min Temperatura', min_value=float(X.min().min()), max_value=float(X.max().max()), value=20.0)
+param5 = st.sidebar.slider('Max Temperatura', min_value=float(X.min().min()), max_value=float(X.max().max()), value=30.0)
+
+novo_registro = np.array([[param1, param2, param3, param4, param5]])
+
+# Fazendo a predição
+predicao = modelo.predict(novo_registro)
+classe_predita = np.round(predicao)
+
+# Exibindo a classe predita
+st.write(f"Predição para o novo registro: {'Vai Chover' if classe_predita[0][0] == 1 else 'Não Vai Chover'}")
