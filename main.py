@@ -98,21 +98,29 @@ st.write(f"**Precisão:** {precision * 100:.2f}%")
 st.write(f"**Recall:** {recall * 100:.2f}%")
 st.write(f"**F1-Score:** {f1:.2f}")
 
-# Fórmulas de Redes Neurais
-st.subheader('Fórmulas de Redes Neurais')
+# Fórmulas das Métricas Avaliativas
+st.subheader('Fórmulas das Métricas Avaliativas')
 st.markdown("""
-### Fórmulas Básicas
+### Fórmulas das Métricas Avaliativas
 
-1. **Função de Ativação ReLU (Rectified Linear Unit)**:
-   $$ \text{ReLU}(x) = \max(0, x) $$
+1. **Acurácia**:
+   \[
+   \text{Acurácia} = \frac{TP + TN}{TP + TN + FP + FN}
+   \]
+   Onde \( TP \) é o Verdadeiro Positivo, \( TN \) é o Verdadeiro Negativo, \( FP \) é o Falso Positivo, e \( FN \) é o Falso Negativo.
 
-2. **Função de Ativação Sigmoid**:
-   $$ \sigma(x) = \frac{1}{1 + e^{-x}} $$
+2. **Precisão**:
+   \[
+   \text{Precisão} = \frac{TP}{TP + FP}
+   \]
 
-3. **Função de Custo Binário Cross-Entropy**:
-   $$ \text{Loss} = -\frac{1}{N} \sum_{i=1}^N \left[ y_i \log(\hat{y_i}) + (1 - y_i) \log(1 - \hat{y_i}) \right] $$
+3. **Recall**:
+   \[
+   \text{Recall} = \frac{TP}{TP + FN}
+   \]
 
-4. **Otimização com SGD (Stochastic Gradient Descent)**:
-   $$ \theta := \theta - \eta \nabla_{\theta} J(\theta) $$
-   Onde \( \eta \) é a taxa de aprendizado, e \( \nabla_{\theta} J(\theta) \) é o gradiente da função de custo.
+4. **F1-Score**:
+   \[
+   \text{F1-Score} = 2 \cdot \frac{\text{Precisão} \cdot \text{Recall}}{\text{Precisão} + \text{Recall}}
+   \]
 """)
