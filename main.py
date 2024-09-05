@@ -6,16 +6,18 @@ from keras.layers import Dense
 from keras.optimizers import SGD
 from keras.callbacks import ModelCheckpoint
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, precision_score, recall_score, f1_score
 import matplotlib.pyplot as plt
 
 # Título do site
-st.title('Previsão do Tempo')
+st.title('Previsão do Tempo com Redes Neurais')
+
 # Centralizando a imagem usando colunas
 col1, col2, col3 = st.columns([1, 2, 1])  # Definindo uma estrutura de colunas com proporções 1:2:1
 
 with col2:
     st.image('img.png', width=350)
+
 # Carregando os dados do arquivo CSV com pandas
 data = pd.read_csv("tempo.csv")
 
@@ -83,4 +85,34 @@ fig, ax = plt.subplots(figsize=(8, 8))
 disp.plot(ax=ax, cmap='Blues')
 st.pyplot(fig)
 
+# Cálculo das métricas avaliativas
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+
+# Exibindo as métricas avaliativas
+st.subheader('Métricas Avaliativas')
+st.write(f"**Acurácia:** {accuracy * 100:.2f}%")
+st.write(f"**Precisão:** {precision * 100:.2f}%")
+st.write(f"**Recall:** {recall * 100:.2f}%")
+st.write(f"**F1-Score:** {f1:.2f}")
+
 # Fórmulas de Redes Neurais
+st.subheader('Fórmulas de Redes Neurais')
+st.markdown("""
+### Fórmulas Básicas
+
+1. **Função de Ativação ReLU (Rectified Linear Unit)**:
+   $$ \text{ReLU}(x) = \max(0, x) $$
+
+2. **Função de Ativação Sigmoid**:
+   $$ \sigma(x) = \frac{1}{1 + e^{-x}} $$
+
+3. **Função de Custo Binário Cross-Entropy**:
+   $$ \text{Loss} = -\frac{1}{N} \sum_{i=1}^N \left[ y_i \log(\hat{y_i}) + (1 - y_i) \log(1 - \hat{y_i}) \right] $$
+
+4. **Otimização com SGD (Stochastic Gradient Descent)**:
+   $$ \theta := \theta - \eta \nabla_{\theta} J(\theta) $$
+   Onde \( \eta \) é a taxa de aprendizado, e \( \nabla_{\theta} J(\theta) \) é o gradiente da função de custo.
+""")
